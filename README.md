@@ -148,6 +148,8 @@ pointer-events none, removed afterwards. Celebrations off = nothing; Animations 
 
 ## Changelog
 
+- **2026-10-20, 1.0.3:** the Effects speed buttons use `data-fxspeed` (was `data-speed`), so a game's
+  own document-level `[data-speed]` handler (e.g. Hold'em's Computer speed) can't catch them. Re-copy.
 - **2026-10-20, 1.0.2:** the animation-speed row is labelled "Effects speed" (games with their own
   game "Speed" row showed two rows called Speed). Re-copy into games.
 - **2026-10-20, 1.0.1:** confetti moves by elapsed time, not per frame, so it no longer crawls on slow
