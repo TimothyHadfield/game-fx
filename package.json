@@ -1,0 +1,9 @@
+{
+  "name": "game-fx",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Synthesised sounds, celebrations and small animations shared by Tim's board game sites.",
+  "scripts": {
+    "test": "node --test test/fx.test.mjs"
+  }
+}

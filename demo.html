@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Game FX demo</title>
+<style>
+  :root {
+    --bg: #0f1117; --bg-soft: #161923; --card: #1a1e2b; --card-hover: #212636; --line: #2a3042;
+    --text: #e8eaf0; --muted: #969db4; --accent: #6ea8fe; --accent-warm: #f0b354; --good: #6ee7a8; --bad: #f08c8c;
+    --radius: 12px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.35 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+  main { max-width: 1100px; margin: 0 auto; padding: 14px 16px 40px; display: grid; gap: 14px; grid-template-columns: 1fr; }
+  .right { display: grid; gap: 14px; min-width: 0; }
+  @media (min-width: 900px) { main { grid-template-columns: 340px 1fr; align-items: start; } }
+  h1 { font-size: 18px; margin: 0; grid-column: 1 / -1; }
+  h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 0 0 8px; }
+  section { background: var(--card); border-radius: var(--radius); padding: 12px 14px; min-width: 0; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(108px, 1fr)); gap: 6px; }
+  button.s { font: inherit; font-size: 13.5px; font-weight: 600; padding: 8px 6px; border-radius: 9px; border: 1px solid var(--line); background: var(--bg-soft); color: var(--text); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  button.s:active { background: var(--card-hover); }
+  .stage { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .card { width: 52px; height: 74px; border-radius: 7px; background: #f6f2e8; color: #c0392b; display: grid; place-items: center; font-weight: 800; font-size: 20px; }
+  .pot { min-width: 96px; height: 74px; border-radius: 37px; border: 2px dashed var(--line); display: grid; place-items: center; font-weight: 800; font-size: 22px; }
+  .lab { font-size: 12px; color: var(--muted); }
+</style>
+</head>
+<body>
+<main>
+  <h1>Game FX demo</h1>
+  <section id="settings"><h2>Settings</h2></section>
+  <div class="right">
+  <section>
+    <h2>Helpers</h2>
+    <div class="stage">
+      <div class="card" id="card">A&hearts;</div>
+      <div class="pot" id="pot">0</div>
+    </div>
+    <div class="grid" id="helpers">
+      <button class="s" data-h="pop">pop</button>
+      <button class="s" data-h="shake">shake</button>
+      <button class="s" data-h="pulse">pulse</button>
+      <button class="s" data-h="flash">flash</button>
+      <button class="s" data-h="flyTo">flyTo</button>
+      <button class="s" data-h="floatText">floatText</button>
+      <button class="s" data-h="countUp">countUp</button>
+      <button class="s" data-h="win">celebrate win</button>
+      <button class="s" data-h="big">celebrate big</button>
+      <button class="s" data-h="lose">celebrate lose</button>
+    </div>
+  </section>
+  <section>
+    <h2>Sounds</h2>
+    <div class="grid" id="sounds"></div>
+  </section>
+  </div>
+</main>
+<script src="fx.js"></script>
+<script>
+  FX.init({ game: 'fx-demo', accent: '#6ea8fe' });
+  FX.renderSettings(document.getElementById('settings'));
+  const sounds = document.getElementById('sounds');
+  FX.sounds.forEach(n => {
+    const b = document.createElement('button');
+    b.className = 's'; b.textContent = n; b.dataset.snd = n;
+    b.title = n + ' (' + FX.soundCategory(n) + ')';
+    sounds.appendChild(b);
+  });
+  sounds.addEventListener('click', e => { const n = e.target.dataset.snd; if (n) FX.play(n); });
+  const card = document.getElementById('card'), pot = document.getElementById('pot');
+  let total = 0;
+  document.getElementById('helpers').addEventListener('click', async e => {
+    const h = e.target.dataset.h; if (!h) return;
+    if (h === 'pop') { FX.play('pop'); FX.pop(card); }
+    if (h === 'shake') { FX.play('error'); FX.shake(pot); }
+    if (h === 'pulse') { FX.play('turn'); FX.pulse(card); }
+    if (h === 'flash') { FX.play('hit'); FX.flash(pot, 'var(--bad)'); }
+    if (h === 'flyTo') { FX.play('cardSlide'); await FX.flyTo(card, pot); FX.play('chip'); FX.pop(pot); }
+    if (h === 'floatText') { FX.play('coin'); FX.floatText(pot, '+5', 'var(--good)'); }
+    if (h === 'countUp') { FX.play('coins'); const from = total; total += 25; FX.countUp(pot, from, total); }
+    if (h === 'win' || h === 'big' || h === 'lose') FX.celebrate({ kind: h, at: pot });
+  });
+</script>
+</body>
+</html>
