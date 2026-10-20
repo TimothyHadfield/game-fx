@@ -1,6 +1,6 @@
 {
   "name": "game-fx",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "private": true,
   "description": "Synthesised sounds, celebrations and small animations shared by Tim's board game sites.",
   "scripts": {
