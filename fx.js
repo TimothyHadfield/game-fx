@@ -4,7 +4,7 @@
 (function (G) {
 'use strict';
 if (G.FX && G.FX.version) return;
-const VERSION = '1.0.0';
+const VERSION = '1.0.1';
 const DEFAULTS = { sound: true, volume: 60, moves: true, alerts: true, ui: true, celebrations: true, animations: true, animSpeed: 'normal' };
 const CATS = ['moves', 'alerts', 'ui', 'celebrations'];
 let key = 'fx:settings', S = Object.assign({}, DEFAULTS), subs = [], accent = '#6ea8fe';
@@ -282,18 +282,20 @@ function celebrate(o) {
   life *= sp();
   const t0 = G.performance ? G.performance.now() : Date.now();
   return new Promise(res => {
-    let ended = false;
+    let ended = false, last = t0;
     const end = () => { if (ended) return; ended = true; c.remove(); res(); };
     const frame = now => {
       if (ended) return;
       const t = (now - t0) / life;
+      // Time-based motion: k = frames' worth of 60 fps elapsed, so confetti moves at the same speed on 30, 60 or 120 Hz screens.
+      const k = Math.max(0, Math.min(4, (now - last) / (1000 / 60))); last = now;
       x.clearRect(0, 0, W, H);
       if (t >= 1) return end();
       if (kind === 'lose') { x.fillStyle = `rgba(0,0,0,${0.35 * Math.sin(Math.PI * t)})`; x.fillRect(0, 0, W, H); }
       const fade = t > 0.75 ? (1 - t) / 0.25 : 1;
       for (const p of P) {
-        if (p.star) { p.vx *= 0.94; p.vy *= 0.94; } else { p.vx *= 0.985; p.vy = p.vy * 0.985 + 0.32; }
-        p.x += p.vx; p.y += p.vy; p.r += p.vr;
+        if (p.star) { const d = Math.pow(0.94, k); p.vx *= d; p.vy *= d; } else { const d = Math.pow(0.985, k); p.vx *= d; p.vy = p.vy * d + 0.32 * k; }
+        p.x += p.vx * k; p.y += p.vy * k; p.r += p.vr * k;
         x.globalAlpha = fade; x.fillStyle = p.c;
         x.save(); x.translate(p.x, p.y); x.rotate(p.r);
         if (p.star) { const s = p.w * (1 - t * 0.6); x.beginPath(); for (let i = 0; i < 8; i++) { const rr = i % 2 ? s * 0.35 : s, a = i * Math.PI / 4; x.lineTo(Math.cos(a) * rr, Math.sin(a) * rr); } x.closePath(); x.fill(); }

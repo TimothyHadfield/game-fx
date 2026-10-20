@@ -148,6 +148,8 @@ pointer-events none, removed afterwards. Celebrations off = nothing; Animations 
 
 ## Changelog
 
+- **2026-10-20, 1.0.1:** confetti moves by elapsed time, not per frame, so it no longer crawls on slow
+  frame rates (seen in headless Safari) or rushes on 120 Hz iPhones. API unchanged; re-copy into games.
 - **2026-10-20, 1.0.0:** first release. 34 sounds, `define`, celebrations (win / big / lose),
   7 helpers, settings + `renderSettings`, auto button taps.
 
